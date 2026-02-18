@@ -1,4 +1,5 @@
 //0.04m per 200 steps, 0.0002m per 1 step
+//green black blue red
 
 //import libraries
 #include <AccelStepper.h> 
@@ -10,9 +11,10 @@ const int sensor2 = 7; //second sensor
 unsigned long time1, time2, steps; //variables for first trigger, second trigger, and the amount of steps
 bool trip = false;//sets trip to false
 float deltaTime, velocity, landingTime, deltaX; //
-float sensorDistance = 0.045;//distance between sensors
+float sensorDistance = 0.033;//distance between sensors
 float gravity = 9.8;//acceleration of gravity
-float tableHeight = 0.73; //(table height) change
+float tableHeight = 0.72; //(table height) change
+float error = 0.05;
 AccelStepper step(AccelStepper::DRIVER, 2, 5); //set stepper pins
 float stepsPerMeter = 5000;//the steps/meter
 
@@ -25,7 +27,7 @@ void setup() {
   step.setSpeed(20000);
   step.setCurrentPosition(0);
   step.setMaxSpeed(20000); //stepper speed
-  step.setAcceleration(100000); //stepper acceleration
+  step.setAcceleration(50000); //stepper acceleration
 
 //set ir sensors to input
   pinMode(sensor1, INPUT);
@@ -59,20 +61,20 @@ void loop() {
 //math yay
   deltaTime = (time2 - time1) / 1000.000;//calculates change in time and changes milliseconds to seconds
   velocity = sensorDistance / deltaTime;//calculates the variable velocity as the distance/the change in time
-  landingTime = (velocity + (sqrt((velocity * velocity) + (2 * gravity * tableHeight)))) / gravity; //calculates the variable landingTime which is the amount of time until it hits the ground (sob)
+  landingTime = sqrt((2 * tableHeight) / gravity); //calculates the variable landingTime which is the amount of time until it hits the ground (sob)
   deltaX = velocity * landingTime;//how far in the sensorDistance axis the ball will travel
   steps = deltaX * stepsPerMeter;//tells us the amount of steps it will take for the motor to get to the location to catch the ball
 
-//prints the velocity on the sensorDistance axis in m/s and k/h
-  // Serial.print(velocity);
-  // Serial.println(" m/s");
-  // Serial.print(velocity * 3.6);
-  // Serial.println(" k/h");
+// prints the velocity on the sensorDistance axis in m/s and k/h
+  Serial.print(velocity);
+  Serial.println(" m/s");
+  Serial.print(velocity * 3.6);
+  Serial.println(" k/h");
  
- //prints the landing point in meters away
-  // Serial.print("landing point: ");//prints “landing point: ”
-  // Serial.print(deltaX);//prints the predicted landing point on the sensorDistance axis
-  // Serial.println("m away");//prints “m away”
+//  prints the landing point in meters away
+  Serial.print("landing point: ");//prints “landing point: ”
+  Serial.print(deltaX);//prints the predicted landing point on the sensorDistance axis
+  Serial.println("m away");//prints “m away”
 
 //moves motor to the predicted landing point
     step.moveTo(steps);
@@ -82,9 +84,9 @@ void loop() {
     delay(5000);
 
 //moves motor back to 0 after 5 seconds
-    stepper.moveTo(0);  
-    while (stepper.distanceToGo() != 0) {
-      stepper.run();
+    step.moveTo(0);  
+    while (step.distanceToGo() != 0) {
+      step.run();
     }
 
 
