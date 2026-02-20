@@ -10,13 +10,12 @@ const int sensor1 = 8; //first sensor
 const int sensor2 = 7; //second sensor
 unsigned long time1, time2, steps; //variables for first trigger, second trigger, and the amount of steps
 bool trip = false;//sets trip to false
-float deltaTime, velocity, landingTime, deltaX; //
+float deltaTime, velocity, landingTime, deltaX; //variables for change in time, velocity, landing time, change in x axis
 float sensorDistance = 0.033;//distance between sensors
 float gravity = 9.8;//acceleration of gravity
-float tableHeight = 0.72; //(table height) change
-float error = 0.05;
+float tableHeight = 0.72; //height of the table
 AccelStepper step(AccelStepper::DRIVER, 2, 5); //set stepper pins
-float stepsPerMeter = 5000;//the steps/meter
+float stepsPerMeter = 5000; //the steps per meter
 
 
 
@@ -61,11 +60,11 @@ void loop() {
 //math yay
   deltaTime = (time2 - time1) / 1000.000;//calculates change in time and changes milliseconds to seconds
   velocity = sensorDistance / deltaTime;//calculates the variable velocity as the distance/the change in time
-  landingTime = sqrt((2 * tableHeight) / gravity); //calculates the variable landingTime which is the amount of time until it hits the ground (sob)
-  deltaX = velocity * landingTime;//how far in the sensorDistance axis the ball will travel
+  landingTime = sqrt((2 * tableHeight) / gravity); //calculates the variable landingTime which is the amount of time until it hits the ground 
+  deltaX = velocity * landingTime;//how far in the x axis the ball will travel
   steps = deltaX * stepsPerMeter;//tells us the amount of steps it will take for the motor to get to the location to catch the ball
 
-// prints the velocity on the sensorDistance axis in m/s and k/h
+// prints the velocity on the x axis in m/s and k/h
   Serial.print(velocity);
   Serial.println(" m/s");
   Serial.print(velocity * 3.6);
@@ -73,7 +72,7 @@ void loop() {
  
 //  prints the landing point in meters away
   Serial.print("landing point: ");//prints “landing point: ”
-  Serial.print(deltaX);//prints the predicted landing point on the sensorDistance axis
+  Serial.print(deltaX);//prints the predicted landing point on the x axis
   Serial.println("m away");//prints “m away”
 
 //moves motor to the predicted landing point
